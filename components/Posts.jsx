@@ -1,40 +1,19 @@
+import { collection, onSnapshot, orderBy, query } from "@firebase/firestore";
+import { useState, useEffect } from "react"
+import { db } from "../firebase";
 import Post from "./Post"
 
-const posts = [
-  {
-    id: "123",
-    username: "salimabdala",
-    userImg: "https://links.papareact.com/3ke",
-    img: "https://links.papareact.com/3ke",
-    caption: "First dummy Post"
-  },
-  {
-    id: "123",
-    username: "salimabdala",
-    userImg: "https://links.papareact.com/3ke",
-    img: "https://links.papareact.com/3ke",
-    caption: "First dummy Post"
-  },
-  {
-    id: "123",
-    username: "salimabdala",
-    userImg: "https://links.papareact.com/3ke",
-    img: "https://links.papareact.com/3ke",
-    caption: "First dummy Post"
-  },
-  {
-    id: "123",
-    username: "salimabdala",
-    userImg: "https://links.papareact.com/3ke",
-    img: "https://links.papareact.com/3ke",
-    caption: "First dummy Post"
-  }
-]
 const Posts = () => {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => onSnapshot(query(collection(db, 'posts'), orderBy('timestamp', 'desc')), snapshot => {
+      setPosts(snapshot.docs);
+    }) //firebase v9 get the posts back from firebase, realtime listener if values changes in database, real time listener, updates react state from docs
+    // useEffect with cleanup 
+  , [db])
   return (
     <div>
       {posts.map((post) => (
-        <Post key={post.id} id={post.id} username={post.username} userImg={post.userImg} img={post.img} caption={post.caption}/>
+        <Post key={post.id} id={post.id} username={post.data().username} userImg={post.data().profileImg} img={post.data().image} caption={post.data().caption}/>
       ))}
     </div>
   )
